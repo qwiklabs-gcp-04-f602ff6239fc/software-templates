@@ -16,7 +16,7 @@ spec:
         app: ${{values.name}}
     spec:
       containers:
-      - image: ghcr.io/${{__GITHUB_ORG__}}/${{values.name}}
+      - image: ghcr.io/qwiklabs-gcp-04-f602ff6239fc/${{values.name}}
         name: ${{values.name}}
         imagePullPolicy: Always
         ports:

@@ -39,7 +39,7 @@ spec:
             allowedHosts:
               - github.com
             allowedOwners:
-              - ${{__GITHUB_ORG__}}
+              - qwiklabs-gcp-04-f602ff6239fc
 
   steps:
     - id: fetch-base
@@ -80,7 +80,7 @@ spec:
         allowedHosts: ["github.com"]
         title: "feat(${{ parameters.name }}): add new app"
         description: "Create new app ${{ parameters.name }}"
-        repoUrl: github.com?owner=${{__GITHUB_ORG__}}&repo=argocd-apps
+        repoUrl: github.com?owner=qwiklabs-gcp-04-f602ff6239fc&repo=argocd-apps
         branchName: create-argocd-apps-${{ parameters.name }}
         sourcePath: argocd-apps
         token: ${{ secrets.USER_OAUTH_TOKEN }}

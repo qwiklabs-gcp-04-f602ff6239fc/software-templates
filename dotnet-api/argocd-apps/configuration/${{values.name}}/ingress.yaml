@@ -10,10 +10,10 @@ spec:
   ingressClassName: "nginx"
   tls:
     - hosts:
-      - ${{values.name}}.${{__GITHUB_ORG__}}.ohmyplatform.com
+      - ${{values.name}}.qwiklabs-gcp-04-f602ff6239fc.ohmyplatform.com
       secretName: ${{values.name}}-tls
   rules:
-    - host: ${{values.name}}.${{__GITHUB_ORG__}}.ohmyplatform.com
+    - host: ${{values.name}}.qwiklabs-gcp-04-f602ff6239fc.ohmyplatform.com
       http:
         paths:
           - path: /

@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: ${{ values.name | lower | dump }}
   annotations:
-    github.com/project-slug: ${{__GITHUB_ORG__}}/${{ values.name | lower }}
+    github.com/project-slug: qwiklabs-gcp-04-f602ff6239fc/${{ values.name | lower }}
     backstage.io/techdocs-ref: dir:.
 spec:
   type: service
