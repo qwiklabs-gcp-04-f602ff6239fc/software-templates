@@ -1,0 +1,103 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: dotnet-api
+  title: .NET API
+  description: A software template to build and publish a .NET API
+spec:
+  owner: group:platform
+  type: service
+
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                  - workflow
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - ${{__GITHUB_ORG__}}
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          name: ${{ parameters.name | capitalize }}
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        defaultBranch: main
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+        repoVisibility: public
+        allowMergeCommit: false
+        allowRebaseMerge: false
+        protectEnforceAdmins: false
+
+    - id: fetch-base
+      name: Fetch ArgoCD Apps
+      action: fetch:template
+      input:
+        url: ./argocd-apps
+        targetPath: argocd-apps
+        values:
+          name: ${{ parameters.name | lower }}
+
+    - id: pr_argocd_apps
+      name: Create ArgoCD Apps PR
+      action: publish:github:pull-request
+      input:
+        allowedHosts: ["github.com"]
+        title: "feat(${{ parameters.name }}): add new app"
+        description: "Create new app ${{ parameters.name }}"
+        repoUrl: github.com?owner=${{__GITHUB_ORG__}}&repo=argocd-apps
+        branchName: create-argocd-apps-${{ parameters.name }}
+        sourcePath: argocd-apps
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
+      - title: ArgoCD Apps PR
+        url: ${{ steps['pr_argocd_apps'].output.remoteUrl }}

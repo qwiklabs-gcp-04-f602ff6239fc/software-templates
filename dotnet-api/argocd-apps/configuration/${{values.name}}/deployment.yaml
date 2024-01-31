@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ${{values.name}}
+  name: ${{values.name}}
+  namespace: ${{values.name}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${{values.name}}
+  template:
+    metadata:
+      labels:
+        app: ${{values.name}}
+    spec:
+      containers:
+      - image: ghcr.io/${{__GITHUB_ORG__}}/${{values.name}}
+        name: ${{values.name}}
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
